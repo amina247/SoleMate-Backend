@@ -98,9 +98,9 @@ router.delete("/:transactionId", isAuthenticated, (req, res, next) => {
             }
         })
         .catch(err => {
-            console.log("Error getting transaction details", err);
+            console.log("Error deleting transaction ", err);
             res.status(500).json({
-                message: "Error getting transaction details",
+                message: "Error deleting transaction ",
                 error: err
             });
         });

@@ -107,39 +107,32 @@ router.put('/:shoeId', isAuthenticated, (req, res, next) => {
 
 
 
-// DELETE: /api/transactions/:transactionId
-router.delete("/:transactionId", isAuthenticated, (req, res, next) => {
-    const { transactionId } = req.params;
+//DELETE:
+// DELETE /api/shoes/:shoeId
+router.delete('/:shoeId', isAuthenticated, (req, res, next) => {
+    const { shoeId } = req.params;
 
-    if (!mongoose.Types.ObjectId.isValid(transactionId)) {
-        res.status(400).json({ message: "Specified id is not valid" });
+    if (!mongoose.Types.ObjectId.isValid(shoeId)) {
+        res.status(400).json({ message: 'Specified id is not valid' });
         return;
     }
 
-    Transaction.findById(transactionId)
-        .then(transaction => {
-            // Check if the current user is the buyer
-            if (transaction.buyer.toString() === req.user._id.toString()) {
-                Transaction.findByIdAndRemove(transactionId)
-                    .then(() => res.json({ message: `Transaction with ${transactionId} is removed successfully.` }))
-                    .catch(err => {
-                        console.log("Error deleting transaction", err);
-                        res.status(500).json({
-                            message: "Error deleting transaction",
-                            error: err
-                        });
-                    });
-            } else {
-                res.status(403).json({ message: "You are not authorized to delete this transaction" });
+    Shoe.findByIdAndRemove({ _id: shoeId, owner: req.payload._id })
+        .then((deletedShoe) => {
+            if (!deletedShoe) {
+                res.status(403).json({ message: 'You are not allowed to delete this shoe' });
+                return;
             }
+
+            res.json({ message: `Shoe with ${shoeId} is removed successfully.` });
         })
         .catch(err => {
-            console.log("Error getting transaction details", err);
+            console.log("error deleting shoe", err);
             res.status(500).json({
-                message: "Error getting transaction details",
-                error: err
+                message: "error deleting shoe",
+                error: err,
             });
-        });
+        })
 });
 
 
