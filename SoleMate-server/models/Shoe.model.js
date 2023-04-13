@@ -2,23 +2,23 @@ const { Schema, model } = require("mongoose");
 
 const shoeSchema = new Schema(
   {
-    name: {
+    model: {
       type: String,
-      required: [true, "Shoe name is required."],
+      required: true,
       trim: true,
     },
     brand: {
       type: String,
-      required: [true, "Brand is required."],
+      required: true,
       trim: true,
     },
     size: {
       type: Number,
-      required: [true, "Size is required."],
+      required: true,
     },
     price: {
       type: Number,
-      required: [true, "Price is required."],
+      required: true,
     },
     description: {
       type: String,
@@ -31,7 +31,7 @@ const shoeSchema = new Schema(
     owner: {
       type: Schema.Types.ObjectId,
       ref: "User",
-      required: [true, "Shoe owner is required."],
+      required: true
     },
   },
   {
@@ -41,5 +41,4 @@ const shoeSchema = new Schema(
 );
 
 const Shoe = model("Shoe", shoeSchema);
-
 module.exports = Shoe;

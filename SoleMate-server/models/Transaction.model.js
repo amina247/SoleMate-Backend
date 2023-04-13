@@ -2,20 +2,20 @@ const { Schema, model } = require("mongoose");
 
 const transactionSchema = new Schema(
   {
-    // buyer: {
-    //   type: Schema.Types.ObjectId,
-    //   ref: "User",
-    //   required: [true, "Buyer is required."],
-    // },
+    buyer: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      // required: true
+    },
     seller: {
       type: Schema.Types.ObjectId,
       ref: "User",
-      required: [true, "Seller is required."],
+      // required: true
     },
     shoe: {
       type: Schema.Types.ObjectId,
       ref: "Shoe",
-      required: [true, "Shoe is required."],
+      // required: true
     },
     transactionDate: {
       type: Date,
@@ -23,7 +23,7 @@ const transactionSchema = new Schema(
     },
     price: {
       type: Number,
-      required: [true, "Price is required."],
+      required: true,
     },
     status: {
       type: String,
@@ -32,7 +32,7 @@ const transactionSchema = new Schema(
     },
   },
   {
-    // this second object adds extra properties: `createdAt` and `updatedAt`
+    // object that adds extra properties like createdAt and updatedAt
     timestamps: true,
   }
 );

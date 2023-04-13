@@ -21,6 +21,14 @@ app.use("/api", indexRoutes);
 const authRoutes = require("./routes/auth.routes");
 app.use("/auth", authRoutes);
 
+// Import shoe and transaction routes
+const shoeRoutes = require("./routes/shoe.routes")
+const transactionRoutes = require("./routes/transaction.routes");
+
+// Add shoe and transaction routes
+app.use("/api/shoes", shoeRoutes);
+app.use("/api/transactions", transactionRoutes);
+
 // ❗ To handle errors. Routes that don't exist or errors that you handle in specific routes
 require("./error-handling")(app);
 
