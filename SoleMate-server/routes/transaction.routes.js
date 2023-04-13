@@ -2,13 +2,13 @@ const router = require("express").Router();
 const mongoose = require("mongoose");
 
 const Transaction = require("../models/Transaction.model");
-
+const { isAuthenticated } = require("../middlewares");
 
 
 
 //CREATE:
 // POST /api/transactions
-router.post("/", (req, res, next) => {
+router.post("/", isAuthenticated, (req, res, next) => {
     const { buyer, seller, shoe, transactionDate, price, status } = req.body;
 
     Transaction.create({ buyer, seller, shoe, transactionDate, price, status })
@@ -27,7 +27,7 @@ router.post("/", (req, res, next) => {
 
 //READ:
 // GET /api/transactions
-router.get("/", (req, res, next) => {
+router.get("/", isAuthenticated, (req, res, next) => {
     Transaction.find()
         .populate("buyer seller shoe")
         .then(transactions => res.json(transactions))
@@ -46,7 +46,7 @@ router.get("/", (req, res, next) => {
 
 //DETAILS:
 // GET /api/transactions/:transactionId
-router.get("/:transactionId", (req, res, next) => {
+router.get("/:transactionId", isAuthenticated, (req, res, next) => {
     const { transactionId } = req.params;
 
     if (!mongoose.Types.ObjectId.isValid(transactionId)) {
@@ -71,9 +71,8 @@ router.get("/:transactionId", (req, res, next) => {
 
 
 
-//DELETE:
-// DELETE /api/transactions/:transactionId
-router.delete("/:transactionId", (req, res, next) => {
+// DELETE: /api/transactions/:transactionId
+router.delete("/:transactionId", isAuthenticated, (req, res, next) => {
     const { transactionId } = req.params;
 
     if (!mongoose.Types.ObjectId.isValid(transactionId)) {
@@ -81,16 +80,32 @@ router.delete("/:transactionId", (req, res, next) => {
         return;
     }
 
-    Transaction.findByIdAndRemove(transactionId)
-        .then(() => res.json({ message: `Transaction with ${transactionId} is removed successfully.` }))
+    Transaction.findById(transactionId)
+        .then(transaction => {
+            // Check if the current user is the buyer
+            if (transaction.buyer.toString() === req.user._id.toString()) {
+                Transaction.findByIdAndRemove(transactionId)
+                    .then(() => res.json({ message: `Transaction with ${transactionId} is removed successfully.` }))
+                    .catch(err => {
+                        console.log("Error deleting transaction", err);
+                        res.status(500).json({
+                            message: "Error deleting transaction",
+                            error: err
+                        });
+                    });
+            } else {
+                res.status(403).json({ message: "You are not authorized to delete this transaction" });
+            }
+        })
         .catch(err => {
-            console.log("Error deleting transaction", err);
+            console.log("Error getting transaction details", err);
             res.status(500).json({
-                message: "Error deleting transaction",
+                message: "Error getting transaction details",
                 error: err
             });
         });
 });
+
 
 
 

@@ -1,12 +1,14 @@
+const { isAuthenticated } = require("../middleware/jwt.middleware.js");
 const router = require("express").Router();
 const mongoose = require("mongoose");
 
 const Shoe = require("../models/Shoe.model");
 
 
+
 //Create:
 // POST /api/shoes
-router.post("/", (req, res, next) => {
+router.post("/", isAuthenticated, (req, res, next) => {
     const { model, brand, size, price, description, imageUrl,  } = req.body;
 
     Shoe.create({  model, brand, size, price, description, imageUrl,  })
@@ -69,7 +71,7 @@ router.get('/:shoeId', (req, res, next) => {
 
 //UPDATE:
 // PUT /api/shoes/:shoeId
-router.put('/:shoeId', (req, res, next) => {
+router.put('/:shoeId', isAuthenticated, (req, res, next) => {
     const { shoeId } = req.params;
 
     if (!mongoose.Types.ObjectId.isValid(shoeId)) {
@@ -77,39 +79,69 @@ router.put('/:shoeId', (req, res, next) => {
         return;
     }
 
-    Shoe.findByIdAndUpdate(shoeId, req.body, { new: true })
-        .then((updatedShoe) => res.json(updatedShoe))
-        .catch(err => {
-            console.log("error updating shoe", err);
-            res.status(500).json({
-                message: "error updating shoe",
-                error: err,
-            });
+    Shoe.findOne({ _id: shoeId, owner: req.payload._id })
+        .then(shoe => {
+            if (!shoe) {
+                res.status(403).json({ message: 'You are not allowed to edit this shoe' });
+                return;
+            }
+
+            Shoe.findByIdAndUpdate(shoeId, req.body, { new: true })
+                .then((updatedShoe) => res.json(updatedShoe))
+                .catch(err => {
+                    console.log("error updating shoe", err);
+                    res.status(500).json({
+                        message: "error updating shoe",
+                        error: err,
+                    });
+                })
         })
+        .catch(err => {
+            console.log("error finding shoe", err);
+            res.status(500).json({
+                message: "error finding shoe",
+                error: err
+            });
+        });
 });
 
 
 
-//DELETE:
-// DELETE /api/shoes/:shoeId
-router.delete('/:shoeId', (req, res, next) => {
-    const { shoeId } = req.params;
+// DELETE: /api/transactions/:transactionId
+router.delete("/:transactionId", isAuthenticated, (req, res, next) => {
+    const { transactionId } = req.params;
 
-    if (!mongoose.Types.ObjectId.isValid(shoeId)) {
-        res.status(400).json({ message: 'Specified id is not valid' });
+    if (!mongoose.Types.ObjectId.isValid(transactionId)) {
+        res.status(400).json({ message: "Specified id is not valid" });
         return;
     }
 
-    Shoe.findByIdAndRemove(shoeId)
-        .then(() => res.json({ message: `Shoe with ${shoeId} is removed successfully.` }))
-        .catch(err => {
-            console.log("error deleting shoe", err);
-            res.status(500).json({
-               message:"error deleting shoe",
-               error: err,
-            });
+    Transaction.findById(transactionId)
+        .then(transaction => {
+            // Check if the current user is the buyer
+            if (transaction.buyer.toString() === req.user._id.toString()) {
+                Transaction.findByIdAndRemove(transactionId)
+                    .then(() => res.json({ message: `Transaction with ${transactionId} is removed successfully.` }))
+                    .catch(err => {
+                        console.log("Error deleting transaction", err);
+                        res.status(500).json({
+                            message: "Error deleting transaction",
+                            error: err
+                        });
+                    });
+            } else {
+                res.status(403).json({ message: "You are not authorized to delete this transaction" });
+            }
         })
+        .catch(err => {
+            console.log("Error getting transaction details", err);
+            res.status(500).json({
+                message: "Error getting transaction details",
+                error: err
+            });
+        });
 });
+
 
 
 

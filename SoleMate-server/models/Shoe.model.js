@@ -40,5 +40,11 @@ const shoeSchema = new Schema(
   }
 );
 
+
+shoeSchema.methods.belongsTo = function (user) {
+  return this.owner.toString() === user._id.toString();
+};
+
+
 const Shoe = model("Shoe", shoeSchema);
 module.exports = Shoe;
