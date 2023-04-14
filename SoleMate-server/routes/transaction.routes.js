@@ -71,7 +71,8 @@ router.get("/:transactionId", isAuthenticated, (req, res, next) => {
 
 
 
-// DELETE: /api/transactions/:transactionId
+// DELETE:
+//api/transactions/:transactionId
 router.delete("/:transactionId", isAuthenticated, (req, res, next) => {
     const { transactionId } = req.params;
 
@@ -82,8 +83,8 @@ router.delete("/:transactionId", isAuthenticated, (req, res, next) => {
 
     Transaction.findById(transactionId)
         .then(transaction => {
-            // Check if the current user is the buyer
-            if (transaction.buyer.toString() === req.user._id.toString()) {
+            // Check if the current user is the seller
+            if (transaction.seller.toString() === req.user._id.toString()) {
                 Transaction.findByIdAndRemove(transactionId)
                     .then(() => res.json({ message: `Transaction with ${transactionId} is removed successfully.` }))
                     .catch(err => {
@@ -105,8 +106,6 @@ router.delete("/:transactionId", isAuthenticated, (req, res, next) => {
             });
         });
 });
-
-
 
 
 module.exports = router;
