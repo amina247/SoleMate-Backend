@@ -106,7 +106,6 @@ router.put('/:shoeId', isAuthenticated, (req, res, next) => {
 });
 
 
-
 //DELETE:
 // DELETE /api/shoes/:shoeId
 router.delete('/:shoeId', isAuthenticated, (req, res, next) => {

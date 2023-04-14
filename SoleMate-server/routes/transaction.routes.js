@@ -2,7 +2,7 @@ const router = require("express").Router();
 const mongoose = require("mongoose");
 
 const Transaction = require("../models/Transaction.model");
-const { isAuthenticated } = require("../middlewares");
+const { isAuthenticated } = require("../middleware/jwt.middleware");
 
 
 
