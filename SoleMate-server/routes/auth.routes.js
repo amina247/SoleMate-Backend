@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const mongoose = require("mongoose");
 
 
 // ℹ️ Handles password encryption
@@ -127,6 +128,26 @@ router.get("/verify", isAuthenticated, (req, res, next) => {
 
   // Send back the token payload object containing the user data
   res.status(200).json(req.payload);
+});
+
+//OWNER DETAILS:
+router.get('/:ownerId', (req, res, next) => {
+  const { ownerId } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(ownerId)) {
+    res.status(400).json({ message: 'Specified id is not valid' });
+    return;
+  }
+
+  User.findById(ownerId)
+    .then(user => { res.json(user) })
+    .catch(err => {
+      console.log("error getting details of a user", err);
+      res.status(500).json({
+        message: "error getting details of a user",
+        error: err
+      });
+    })
 });
 
 module.exports = router;

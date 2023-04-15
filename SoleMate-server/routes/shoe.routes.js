@@ -9,9 +9,9 @@ const Shoe = require("../models/Shoe.model");
 //Create:
 // POST /api/shoes
 router.post("/", isAuthenticated, (req, res, next) => {
-    const { model, brand, size, price, description, imageUrl, owner} = req.body;
+    const { model, brand, size, price, description, imageUrl, owner } = req.body;
 
-    Shoe.create({  model, brand, size, price, description, imageUrl, owner})
+    Shoe.create({ model, brand, size, price, description, imageUrl, owner })
         .then(response => res.status(201).json(response))
         .catch(err => {
             console.log("error creating a new shoe", err);
@@ -26,18 +26,18 @@ router.post("/", isAuthenticated, (req, res, next) => {
 
 //READ:
 // Get /api/shoes
-router.get("/", (req, res, next) =>{
+router.get("/", (req, res, next) => {
     Shoe.find()
-    .then(shoesFromDb => {
-        res.json(shoesFromDb);
-    })
-    .catch(err => {
-        console.log("error getting list of shoes", err);
-        res.status(500).json({
-            message: "error getting list of shoes",
-            error: err
-        });
-    })
+        .then(shoesFromDb => {
+            res.json(shoesFromDb);
+        })
+        .catch(err => {
+            console.log("error getting list of shoes", err);
+            res.status(500).json({
+                message: "error getting list of shoes",
+                error: err
+            });
+        })
 });
 
 
@@ -55,12 +55,12 @@ router.get('/:shoeId', (req, res, next) => {
     }
 
     Shoe.findById(shoeId)
-        .then(shoe => res.json(shoe))
+        .then(shoe => { res.json(shoe) })
         .catch(err => {
             console.log("error getting details of a shoe", err);
             res.status(500).json({
                 message: "error getting details of a shoe",
-               error: err
+                error: err
             });
         })
 });
