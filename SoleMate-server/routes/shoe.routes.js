@@ -9,9 +9,9 @@ const Shoe = require("../models/Shoe.model");
 //Create:
 // POST /api/shoes
 router.post("/", isAuthenticated, (req, res, next) => {
-    const { model, brand, size, price, description, imageUrl,  } = req.body;
+    const { model, brand, size, price, description, imageUrl, owner} = req.body;
 
-    Shoe.create({  model, brand, size, price, description, imageUrl,  })
+    Shoe.create({  model, brand, size, price, description, imageUrl, owner})
         .then(response => res.status(201).json(response))
         .catch(err => {
             console.log("error creating a new shoe", err);
@@ -104,6 +104,7 @@ router.put('/:shoeId', isAuthenticated, (req, res, next) => {
             });
         });
 });
+
 
 
 //DELETE:
