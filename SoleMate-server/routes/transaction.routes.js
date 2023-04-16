@@ -27,18 +27,18 @@ router.post("/", isAuthenticated, (req, res, next) => {
 
 // //READ:
 // // GET /api/transactions
-router.get("/", (req, res, next) => {
-    Transaction.find()
-        .populate("buyer seller shoe")
-        .then(transactions => res.json(transactions))
-        .catch(err => {
-            console.log("Error getting transactions", err);
-            res.status(500).json({
-                message: "Error getting transactions",
-                error: err
-            });
-        });
-});
+// router.get("/", (req, res, next) => {
+//     Transaction.find()
+//         .populate("buyer seller shoe")
+//         .then(transactions => res.json(transactions))
+//         .catch(err => {
+//             console.log("Error getting transactions", err);
+//             res.status(500).json({
+//                 message: "Error getting transactions",
+//                 error: err
+//             });
+//         });
+// });
 
 //READ:
 // GET /api/transactions/seller/:sellerId
