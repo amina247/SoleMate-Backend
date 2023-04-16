@@ -5,17 +5,17 @@ const transactionSchema = new Schema(
     buyer: {
       type: Schema.Types.ObjectId,
       ref: "User",
-      // required: true
+      required: true
     },
     seller: {
       type: Schema.Types.ObjectId,
       ref: "User",
-      // required: true
+      required: true
     },
     shoe: {
       type: Schema.Types.ObjectId,
       ref: "Shoe",
-      // required: true
+      required: true
     },
     transactionDate: {
       type: Date,
@@ -27,7 +27,7 @@ const transactionSchema = new Schema(
     },
     status: {
       type: String,
-      enum: ["pending", "completed",], //cancelled can be added later as a Bonus
+      enum: ["pending", "completed", "cancelled"],
       default: "pending",
     },
   },

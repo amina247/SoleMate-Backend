@@ -27,12 +27,18 @@ const shoeSchema = new Schema(
     imageUrl: {
       type: String,
       trim: true,
+      required: true
     },
     owner: {
       type: Schema.Types.ObjectId,
       ref: "User",
       required: true
     },
+    forSale: {
+      type: Boolean,
+      required: true,
+      default: false
+    }
   },
   {
     // this second object adds extra properties: `createdAt` and `updatedAt`

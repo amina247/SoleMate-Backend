@@ -9,9 +9,9 @@ const Shoe = require("../models/Shoe.model");
 //Create:
 // POST /api/shoes
 router.post("/", isAuthenticated, (req, res, next) => {
-    const { model, brand, size, price, description, imageUrl, owner } = req.body;
+    const { model, brand, size, price, description, imageUrl, owner, forSale } = req.body;
 
-    Shoe.create({ model, brand, size, price, description, imageUrl, owner })
+    Shoe.create({ model, brand, size, price, description, imageUrl, owner, forSale })
         .then(response => res.status(201).json(response))
         .catch(err => {
             console.log("error creating a new shoe", err);

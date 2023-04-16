@@ -9,9 +9,9 @@ const { isAuthenticated } = require("../middleware/jwt.middleware");
 //CREATE:
 // POST /api/transactions
 router.post("/", isAuthenticated, (req, res, next) => {
-    const { buyer, seller, shoe, transactionDate, price, status } = req.body;
+    const { buyer, seller, shoe, price } = req.body;
 
-    Transaction.create({ buyer, seller, shoe, transactionDate, price, status })
+    Transaction.create({ buyer, seller, shoe, price })
         .then(transaction => res.status(201).json(transaction))
         .catch(err => {
             console.log("Error creating a new transaction", err);
@@ -25,9 +25,9 @@ router.post("/", isAuthenticated, (req, res, next) => {
 
 
 
-//READ:
-// GET /api/transactions
-router.get("/", isAuthenticated, (req, res, next) => {
+// //READ:
+// // GET /api/transactions
+router.get("/", (req, res, next) => {
     Transaction.find()
         .populate("buyer seller shoe")
         .then(transactions => res.json(transactions))
@@ -40,7 +40,47 @@ router.get("/", isAuthenticated, (req, res, next) => {
         });
 });
 
+//READ:
+// GET /api/transactions/seller/:sellerId
+router.get("/seller/:sellerId", isAuthenticated, (req, res, next) => {
+    const { sellerId } = req.params;
 
+    if (!mongoose.Types.ObjectId.isValid(sellerId)) {
+        res.status(400).json({ message: "Specified id is not valid" });
+        return;
+    }
+
+    Transaction.findOne({ seller: sellerId })
+        .then(transactions => res.json(transactions))
+        .catch(err => {
+            console.log("Error getting transactions", err);
+            res.status(500).json({
+                message: "Error getting transactions",
+                error: err
+            });
+        });
+});
+
+//READ:
+// GET /api/transactions/buyer/:buyerId
+router.get("/buyer/:buyerId", isAuthenticated, (req, res, next) => {
+    const { buyerId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(buyerId)) {
+        res.status(400).json({ message: "Specified id is not valid" });
+        return;
+    }
+
+    Transaction.findOne({ buyer: buyerId })
+        .then(transactions => res.json(transactions))
+        .catch(err => {
+            console.log("Error getting transactions", err);
+            res.status(500).json({
+                message: "Error getting transactions",
+                error: err
+            });
+        });
+});
 
 
 
@@ -65,9 +105,6 @@ router.get("/:transactionId", isAuthenticated, (req, res, next) => {
             });
         });
 });
-
-
-
 
 
 
@@ -107,5 +144,40 @@ router.delete("/:transactionId", isAuthenticated, (req, res, next) => {
         });
 });
 
+//UPDATE:
+// PUT /api/transactions/:transactionId
+router.put('/:transactionId', isAuthenticated, (req, res, next) => {
+    const { transactionId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(transactionId)) {
+        res.status(400).json({ message: 'Specified id is not valid' });
+        return;
+    }
+
+    Transaction.findOne({ _id: transactionId, owner: req.payload._id })
+        .then(transaction => {
+            if (!transaction) {
+                res.status(403).json({ message: 'You are not allowed to edit this shoe' });
+                return;
+            }
+
+            Transaction.findByIdAndUpdate(transactionId, req.body, { new: true })
+                .then((updatedTransaction) => res.json(updatedTransaction))
+                .catch(err => {
+                    console.log("error updating transaction", err);
+                    res.status(500).json({
+                        message: "error updating transaction",
+                        error: err,
+                    });
+                })
+        })
+        .catch(err => {
+            console.log("error finding transaction", err);
+            res.status(500).json({
+                message: "error finding transaction",
+                error: err
+            });
+        });
+});
 
 module.exports = router;
