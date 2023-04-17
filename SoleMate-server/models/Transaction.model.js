@@ -25,11 +25,6 @@ const transactionSchema = new Schema(
       type: Number,
       required: true,
     },
-    status: {
-      type: String,
-      enum: ["pending", "completed", "cancelled"],
-      default: "pending",
-    },
   },
   {
     // object that adds extra properties like createdAt and updatedAt

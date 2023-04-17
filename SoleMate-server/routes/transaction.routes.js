@@ -50,7 +50,8 @@ router.get("/seller/:sellerId", isAuthenticated, (req, res, next) => {
         return;
     }
 
-    Transaction.findOne({ seller: sellerId })
+    Transaction.find({ seller: sellerId })
+        .populate("shoe buyer")
         .then(transactions => res.json(transactions))
         .catch(err => {
             console.log("Error getting transactions", err);
@@ -107,42 +108,34 @@ router.get("/:transactionId", isAuthenticated, (req, res, next) => {
 });
 
 
-
-// DELETE:
+//DELETE:
 //api/transactions/:transactionId
-router.delete("/:transactionId", isAuthenticated, (req, res, next) => {
+router.delete('/:transactionId', isAuthenticated, (req, res, next) => {
     const { transactionId } = req.params;
 
     if (!mongoose.Types.ObjectId.isValid(transactionId)) {
-        res.status(400).json({ message: "Specified id is not valid" });
+        res.status(400).json({ message: 'Specified id is not valid' });
         return;
     }
 
-    Transaction.findById(transactionId)
-        .then(transaction => {
-            // Check if the current user is the seller
-            if (transaction.seller.toString() === req.user._id.toString()) {
-                Transaction.findByIdAndRemove(transactionId)
-                    .then(() => res.json({ message: `Transaction with ${transactionId} is removed successfully.` }))
-                    .catch(err => {
-                        console.log("Error deleting transaction", err);
-                        res.status(500).json({
-                            message: "Error deleting transaction",
-                            error: err
-                        });
-                    });
-            } else {
-                res.status(403).json({ message: "You are not authorized to delete this transaction" });
+    Transaction.findByIdAndRemove({ _id: transactionId, seller: req.payload._id })
+        .then((deletedTransaction) => {
+            if (!deletedTransaction) {
+                res.status(403).json({ message: 'You are not allowed to delete this offer' });
+                return;
             }
+
+            res.json({ message: `Offer with ${transactionId} is removed successfully.` });
         })
         .catch(err => {
-            console.log("Error deleting transaction ", err);
+            console.log("error deleting offer", err);
             res.status(500).json({
-                message: "Error deleting transaction ",
-                error: err
+                message: "error deleting offer",
+                error: err,
             });
-        });
+        })
 });
+
 
 //UPDATE:
 // PUT /api/transactions/:transactionId
