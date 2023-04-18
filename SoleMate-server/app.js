@@ -22,7 +22,7 @@ const authRoutes = require("./routes/auth.routes");
 app.use("/auth", authRoutes);
 
 // Import shoe and transaction routes
-const shoeRoutes = require("./routes/Shoe.routes")
+const shoeRoutes = require("../SoleMate-server/routes/shoe.routes")
 const transactionRoutes = require("./routes/transaction.routes");
 
 // Add shoe and transaction routes
