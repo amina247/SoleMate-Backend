@@ -16,7 +16,7 @@ router.post("/", isAuthenticated, (req, res, next) => {
         .catch(err => {
             console.log("error creating a new shoe", err);
             res.status(500).json({
-                message: "error creating a new shoe",
+                message: "you need to fill all the parts out!",
                 error: err
             });
         })
