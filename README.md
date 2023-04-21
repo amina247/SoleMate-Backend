@@ -2,6 +2,13 @@
 
 This repository contains the backend server for the SoleMate shoe collection management website. The server is built using the MERN stack (MongoDB, Express, React, and Node.js).
 
+
+## Related Repositories
+
+- [SoleMate Frontend](https://github.com/amina247/SoleMate-Frontend) - Frontend user interface for SoleMate
+
+
+
 ## Demo
 
 [https://solemate.adaptable.app/](https://solemate.adaptable.app/)
